@@ -1,5 +1,6 @@
 package com.example.customviewdemo
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -42,6 +43,22 @@ class DrawFragment : Fragment() {
 
             override fun onStopTrackingTouch(seek: SeekBar) {}
         })
+
+        binding.redBtn.setOnClickListener {
+            customView.setColor(Color.RED)
+        }
+
+        binding.greenBtn.setOnClickListener {
+            customView.setColor(Color.GREEN)
+        }
+
+        binding.blueBtn.setOnClickListener {
+            customView.setColor(Color.BLUE)
+        }
+
+        binding.blackBtn.setOnClickListener {
+            customView.setColor(Color.BLACK)
+        }
 
         return binding.root
     }

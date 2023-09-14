@@ -7,7 +7,8 @@ import androidx.lifecycle.ViewModel
 
 data class CustomPath(
     val path: Path,
-    var strokeWidth: Float
+    var strokeWidth: Float,
+    var color: Int
 )
 
 class SimpleViewModel : ViewModel() {

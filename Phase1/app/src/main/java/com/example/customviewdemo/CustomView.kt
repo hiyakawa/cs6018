@@ -14,7 +14,6 @@ class CustomView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     private val paths = mutableListOf<CustomPath>()
     private lateinit var path : Path
-
     private val paint = Paint()
 
     init {
@@ -23,6 +22,7 @@ class CustomView(context: Context, attrs: AttributeSet) : View(context, attrs) {
         paint.strokeJoin = Paint.Join.ROUND
         paint.strokeCap = Paint.Cap.ROUND
         paint.isAntiAlias = true
+        paint.color = Color.BLACK
     }
 
     fun setPath(path: Path) {
@@ -60,6 +60,7 @@ class CustomView(context: Context, attrs: AttributeSet) : View(context, attrs) {
         super.onDraw(canvas)
         for (customPath in paths) {
             paint.strokeWidth = customPath.strokeWidth
+            paint.color = customPath.color
             canvas.drawPath(customPath.path, paint)
         }
     }
@@ -72,7 +73,7 @@ class CustomView(context: Context, attrs: AttributeSet) : View(context, attrs) {
             MotionEvent.ACTION_DOWN -> {
                 val newPath = Path()
                 newPath.moveTo(x, y)
-                paths.add(CustomPath(newPath, paint.strokeWidth))
+                paths.add(CustomPath(newPath, paint.strokeWidth, paint.color))
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
