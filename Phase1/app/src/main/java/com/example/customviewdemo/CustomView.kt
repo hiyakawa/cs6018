@@ -5,6 +5,8 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -15,6 +17,7 @@ class CustomView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     private val paths = mutableListOf<CustomPath>()
     private lateinit var path : Path
     private val paint = Paint()
+    private var eraserMode = false
 
     init {
         paint.style = Paint.Style.STROKE
@@ -53,14 +56,29 @@ class CustomView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     }
 
     fun setWidth(width: Float) {
-        paint.strokeWidth = width.toFloat()
+        paint.strokeWidth = width
+    }
+
+    fun toggleEraserMode(){
+        eraserMode = !eraserMode
+        if(eraserMode){
+            paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+        }else{
+            paint.xfermode = null
+        }
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         for (customPath in paths) {
             paint.strokeWidth = customPath.strokeWidth
-            paint.color = customPath.color
+            if (customPath.eraserMode) {
+                paint.color = Color.TRANSPARENT
+                paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+            } else {
+                paint.color = customPath.color
+                paint.xfermode = null
+            }
             canvas.drawPath(customPath.path, paint)
         }
     }
@@ -73,7 +91,11 @@ class CustomView(context: Context, attrs: AttributeSet) : View(context, attrs) {
             MotionEvent.ACTION_DOWN -> {
                 val newPath = Path()
                 newPath.moveTo(x, y)
-                paths.add(CustomPath(newPath, paint.strokeWidth, paint.color))
+                val customPath = CustomPath(newPath, paint.strokeWidth, paint.color, eraserMode)
+                paths.add(customPath)
+                if (eraserMode) {
+                    customPath.color = Color.TRANSPARENT
+                }
                 return true
             }
             MotionEvent.ACTION_MOVE -> {

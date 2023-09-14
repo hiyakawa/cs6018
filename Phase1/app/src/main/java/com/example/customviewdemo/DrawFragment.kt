@@ -60,6 +60,9 @@ class DrawFragment : Fragment() {
             customView.setColor(Color.BLACK)
         }
 
+        binding.eraserBtn.setOnClickListener{
+            customView.toggleEraserMode()
+        }
         return binding.root
     }
 
