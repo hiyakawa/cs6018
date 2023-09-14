@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:max="100"
         android:min="5"
-        android:progress="30" />
+        android:progress="5" />
 
     <TextView
         android:id="@+id/seekBarProgress"
@@ -31,21 +31,35 @@
 
         <Button
             android:id="@+id/button1"
-            android:layout_width="wrap_content"
+            android:layout_width="64dp"
             android:layout_height="wrap_content"
             android:text="Red" />
 
         <Button
             android:id="@+id/button2"
-            android:layout_width="wrap_content"
+            android:layout_width="72dp"
             android:layout_height="wrap_content"
             android:text="Green" />
 
         <Button
             android:id="@+id/button3"
-            android:layout_width="wrap_content"
+            android:layout_width="75dp"
             android:layout_height="wrap_content"
             android:text="Blue" />
+
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Back" />
+
+        <Button
+            android:id="@+id/btnClear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Clear" />
 
     </LinearLayout>
 

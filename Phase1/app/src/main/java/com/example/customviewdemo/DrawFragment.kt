@@ -1,7 +1,6 @@
 package com.example.customviewdemo
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,26 +19,36 @@ class DrawFragment : Fragment() {
         val binding = FragmentDrawBinding.inflate(inflater)
         val viewModel: SimpleViewModel by activityViewModels()
 
-        binding.customView.setPath(viewModel.path.value!!)
+        val customView = binding.customView
+
+        binding.btnBack.setOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
+        }
+
+        binding.btnClear.setOnClickListener {
+            customView.clearCanvas()
+        }
+
+        val customPath = viewModel.pathData.value
+        if (customPath != null) {
+            customView.setPath(customPath.path)
+            customView.setWidth(customPath.strokeWidth)
+        }
 
         binding.sizeSeekBar.setOnSeekBarChangeListener(object :
             SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seek: SeekBar,
-                                           progress: Int, fromUser: Boolean) {
-
-                binding.seekBarProgress.text = progress.toString()
-                binding.customView.width = progress
+            override fun onProgressChanged(seek: SeekBar, progress: Int, fromUser: Boolean) {
+                val strokeWidth = progress.toFloat()
+                binding.seekBarProgress.text = strokeWidth.toInt().toString()
+                customView.setWidth(strokeWidth)
             }
 
             override fun onStartTrackingTouch(seek: SeekBar) {
-                // write custom code for progress is started
             }
 
             override fun onStopTrackingTouch(seek: SeekBar) {
             }
         })
-
-
 
         return binding.root
     }

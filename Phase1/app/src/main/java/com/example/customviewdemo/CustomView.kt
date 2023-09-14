@@ -1,57 +1,77 @@
 package com.example.customviewdemo
 
-import android.R
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import androidx.core.content.ContextCompat
 
 
 class CustomView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
-    private lateinit var path : Path
+    private val paths = mutableListOf<CustomPath>()
 
-    private val paint = Paint()
+    private val paint = Paint().apply {
+        color = Color.BLACK
+        style = Paint.Style.STROKE
+        strokeWidth = 5f
+    }
 
     init {
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 30f
-        paint.strokeJoin = Paint.Join.ROUND
-        paint.strokeCap = Paint.Cap.ROUND
-        paint.isAntiAlias = true
+        // 在 CustomView 初始化时设置默认数据
+        val customPath = CustomPath(Path(), paint.strokeWidth)
+        paths.add(customPath)
     }
 
     fun setPath(path: Path) {
-        this.path = path
+        // 将路径添加到列表中
+        val customPath = CustomPath(path, paint.strokeWidth)
+        paths.add(customPath)
+        invalidate()
     }
 
-    fun setWidth(width: Int) {
-        this.paint.strokeWidth = width.toFloat()
+    fun clearCanvas() {
+        paths.clear()
+        invalidate()
     }
 
     fun setColor(color: Int) {
         paint.color = color
     }
 
+    fun setWidth(width: Float) {
+        paint.strokeWidth = width.toFloat()
+    }
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas.drawPath(path, paint)
+        for (customPath in paths) {
+            paint.strokeWidth = customPath.strokeWidth
+            canvas.drawPath(customPath.path, paint)
+        }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        val x = event.x
+        val y = event.y
+
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                path.moveTo(event.x, event.y)
+                val newPath = Path()
+                newPath.moveTo(x, y)
+                paths.add(CustomPath(newPath, paint.strokeWidth))
+                return true
             }
             MotionEvent.ACTION_MOVE -> {
-                path.lineTo(event.x, event.y)
+                val currentPath = paths.lastOrNull()?.path
+                currentPath?.lineTo(x, y)
+                invalidate()
+                return true
             }
+            else -> return super.onTouchEvent(event)
         }
-        invalidate()
-        return true
     }
 }
