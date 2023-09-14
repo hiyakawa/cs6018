@@ -13,23 +13,33 @@ import android.view.View
 class CustomView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     private val paths = mutableListOf<CustomPath>()
+    private lateinit var path : Path
 
-    private val paint = Paint().apply {
-        color = Color.BLACK
-        style = Paint.Style.STROKE
-        strokeWidth = 5f
-    }
+    private val paint = Paint()
 
     init {
-        // 在 CustomView 初始化时设置默认数据
-        val customPath = CustomPath(Path(), paint.strokeWidth)
-        paths.add(customPath)
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 30f
+        paint.strokeJoin = Paint.Join.ROUND
+        paint.strokeCap = Paint.Cap.ROUND
+        paint.isAntiAlias = true
     }
 
     fun setPath(path: Path) {
-        // 将路径添加到列表中
-        val customPath = CustomPath(path, paint.strokeWidth)
-        paths.add(customPath)
+        this.path = path
+    }
+
+    fun setWidth(width: Int) {
+        this.paint.strokeWidth = width.toFloat()
+    }
+
+    fun getPaths(): List<CustomPath> {
+        return paths
+    }
+
+    fun setPaths(customPaths: List<CustomPath>) {
+        paths.clear()
+        paths.addAll(customPaths)
         invalidate()
     }
 

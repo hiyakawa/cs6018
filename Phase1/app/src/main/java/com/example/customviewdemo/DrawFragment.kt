@@ -11,15 +11,16 @@ import com.example.customviewdemo.databinding.FragmentDrawBinding
 
 class DrawFragment : Fragment() {
 
+    private val viewModel: SimpleViewModel by activityViewModels()
+    private lateinit var customView: CustomView
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         val binding = FragmentDrawBinding.inflate(inflater)
-        val viewModel: SimpleViewModel by activityViewModels()
 
-        val customView = binding.customView
+        customView = binding.customView
 
         binding.btnBack.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
@@ -27,12 +28,6 @@ class DrawFragment : Fragment() {
 
         binding.btnClear.setOnClickListener {
             customView.clearCanvas()
-        }
-
-        val customPath = viewModel.pathData.value
-        if (customPath != null) {
-            customView.setPath(customPath.path)
-            customView.setWidth(customPath.strokeWidth)
         }
 
         binding.sizeSeekBar.setOnSeekBarChangeListener(object :
@@ -43,13 +38,24 @@ class DrawFragment : Fragment() {
                 customView.setWidth(strokeWidth)
             }
 
-            override fun onStartTrackingTouch(seek: SeekBar) {
-            }
+            override fun onStartTrackingTouch(seek: SeekBar) {}
 
-            override fun onStopTrackingTouch(seek: SeekBar) {
-            }
+            override fun onStopTrackingTouch(seek: SeekBar) {}
         })
 
         return binding.root
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.setPath(customView.getPaths())
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val customPaths = viewModel.pathData.value
+        if (customPaths != null) {
+            customView.setPaths(customPaths)
+        }
     }
 }

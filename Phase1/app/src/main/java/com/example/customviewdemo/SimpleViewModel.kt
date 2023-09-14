@@ -9,13 +9,13 @@ data class CustomPath(
     val path: Path,
     var strokeWidth: Float
 )
-class SimpleViewModel :ViewModel() {
 
-    private val _pathData: MutableLiveData<CustomPath> = MutableLiveData()
-    val pathData: LiveData<CustomPath> = _pathData
+class SimpleViewModel : ViewModel() {
 
-    fun setPath(path: Path, strokeWidth: Float) {
-        _pathData.value = CustomPath(path, strokeWidth)
+    private val _pathData: MutableLiveData<List<CustomPath>> = MutableLiveData()
+    val pathData: LiveData<List<CustomPath>> = _pathData
+
+    fun setPath(paths: List<CustomPath>) {
+        _pathData.value = paths
     }
-
 }
