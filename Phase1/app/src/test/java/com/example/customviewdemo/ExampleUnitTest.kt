@@ -1,4 +1,4 @@
-package com.example.drawingapp
+package com.example.customviewdemo
 
 import org.junit.Test
 
