@@ -5,9 +5,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class SimpleViewModel :ViewModel() {
+data class CustomPath(
+    val path: Path,
+    var strokeWidth: Float,
+    var color: Int
+)
 
-    private val _path : MutableLiveData<Path> = MutableLiveData(Path())
-    private val _size : Int = 0
-    val path  = _path as LiveData<Path>
+class SimpleViewModel : ViewModel() {
+
+    private val _pathData: MutableLiveData<List<CustomPath>> = MutableLiveData()
+    val pathData: LiveData<List<CustomPath>> = _pathData
+
+    fun setPath(paths: List<CustomPath>) {
+        _pathData.value = paths
+    }
 }
