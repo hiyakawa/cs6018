@@ -25,14 +25,6 @@ class CustomView(context: Context, attrs: AttributeSet) : View(context, attrs) {
         paint.color = Color.BLACK
     }
 
-    fun setPath(path: Path) {
-        this.path = path
-    }
-
-    fun setWidth(width: Int) {
-        this.paint.strokeWidth = width.toFloat()
-    }
-
     fun getPaths(): List<CustomPath> {
         return paths
     }
