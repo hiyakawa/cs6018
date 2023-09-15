@@ -31,12 +31,12 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
     buildFeatures{
         dataBinding = true
         viewBinding = true
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
 
@@ -56,4 +56,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
     //Fragment stuff
     implementation("androidx.fragment:fragment-ktx:1.6.1")
+    // splash screen
+    implementation("androidx.core:core-splashscreen:1.0.1")
 }

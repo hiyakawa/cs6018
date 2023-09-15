@@ -13,7 +13,6 @@ import android.view.View
 class CustomView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     private val paths = mutableListOf<CustomPath>()
-    private lateinit var path : Path
     private val paint = Paint()
 
     init {
@@ -23,6 +22,12 @@ class CustomView(context: Context, attrs: AttributeSet) : View(context, attrs) {
         paint.strokeCap = Paint.Cap.ROUND
         paint.isAntiAlias = true
         paint.color = Color.BLACK
+    }
+
+    override fun onMeasure(widthSpec: Int, heightSpec: Int) {
+        super.onMeasure(widthSpec, heightSpec)
+        val size = Math.min(measuredWidth, measuredHeight)
+        setMeasuredDimension(size, size)
     }
 
     fun getPaths(): List<CustomPath> {
@@ -55,6 +60,11 @@ class CustomView(context: Context, attrs: AttributeSet) : View(context, attrs) {
             paint.color = customPath.color
             canvas.drawPath(customPath.path, paint)
         }
+        val paint = Paint()
+        paint.color = Color.BLUE
+        paint.strokeWidth = 1.5f
+        paint.style = Paint.Style.STROKE
+        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
