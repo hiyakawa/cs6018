@@ -35,7 +35,6 @@ class DrawFragment : Fragment() {
             SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seek: SeekBar, progress: Int, fromUser: Boolean) {
                 val strokeWidth = progress.toFloat()
-                binding.seekBarProgress.text = strokeWidth.toInt().toString()
                 customView.setWidth(strokeWidth)
             }
 

@@ -8,90 +8,97 @@
     <com.example.customviewdemo.CustomView
         android:id="@+id/customView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <SeekBar
-        android:id="@+id/sizeSeekBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="100"
-        android:min="5"
-        android:progress="30" />
-
-    <TextView
-        android:id="@+id/seekBarProgress"
-        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="26dp"
-        />
+        android:layout_gravity="center" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:layout_marginBottom="120dp">
+
+        <SeekBar
+            android:id="@+id/sizeSeekBar"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:max="100"
+            android:min="5"
+            android:progress="30" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_gravity="bottom"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:layout_marginBottom="84dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp">
-
-            <Button
-                android:id="@+id/redBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="#FF0000"
-                android:text="Red"
-                android:textColor="#FFFFFF" />
-
-            <Button
-                android:id="@+id/greenBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="#00FF00"
-                android:text="Green"
-                android:textColor="#FFFFFF" />
-
-            <Button
-                android:id="@+id/blueBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="#0000FF"
-                android:text="Blue"
-                android:textColor="#FFFFFF" />
-
-            <Button
-                android:id="@+id/blackBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="#000000"
-                android:text="Black"
-                android:textColor="#FFFFFF" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/redBtn"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:backgroundTint="#FF0000"
+            android:text="Red"
+            android:textColor="#FFFFFF" />
 
-            <Button
-                android:id="@+id/btnBack"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Back" />
+        <Button
+            android:id="@+id/greenBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:backgroundTint="#00FF00"
+            android:text="Green"
+            android:textColor="#FFFFFF" />
 
-            <Button
-                android:id="@+id/btnClear"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Clear" />
-        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:layout_marginBottom="42dp">
+
+        <Button
+            android:id="@+id/blueBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:backgroundTint="#0000FF"
+            android:text="Blue"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/blackBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:backgroundTint="#000000"
+            android:text="Black"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="bottom"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Back" />
+
+        <Button
+            android:id="@+id/btnClear"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Clear" />
 
     </LinearLayout>
 

@@ -5,10 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.customviewdemo.databinding.FragmentClickBinding
+import com.example.customviewdemo.databinding.FragmentSplashBinding
 
-class ClickFragment : Fragment() {
-
+class SplashFragment : Fragment() {
     private var buttonFunction : () -> Unit = {}
 
     fun setButtonFunction(newFunc: () -> Unit) {
@@ -19,9 +18,9 @@ class ClickFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = FragmentClickBinding.inflate(inflater, container, false)
+        val binding = FragmentSplashBinding.inflate(inflater, container, false)
 
-        binding.clickMe.setOnClickListener {
+        binding.enterBtn.setOnClickListener {
             buttonFunction()
         }
 
