@@ -81,8 +81,3 @@ private fun SplashScreen(navController: NavHostController) {
 private fun GalleryScreen(navController: NavHostController) {
     Text(text = "gallery")
 }
-
-@Composable
-private fun CanvasScreen(navController: NavHostController) {
-    Text(text = "canvas")
-}
