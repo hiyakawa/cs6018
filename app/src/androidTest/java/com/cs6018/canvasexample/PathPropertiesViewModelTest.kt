@@ -6,9 +6,9 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.cs6018.canvasexample.data.PathProperties
-import com.cs6018.canvasexample.data.PathPropertiesViewModel
-import com.cs6018.canvasexample.utils.MotionEvent
+import com.cs6018.canvasexample.model.PathProperties
+import com.cs6018.canvasexample.model.PathPropertiesViewModel
+import com.cs6018.canvasexample.gesture.MotionEvent
 
 import org.junit.Assert
 
@@ -17,13 +17,10 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class PathPropertiesViewModelTest {
-
     @Test
     fun testInitialization() {
         val vm = PathPropertiesViewModel()
         Assert.assertSame("#ffffff", vm.hexColorCode.value)
-        // currentPathProperties is test in PathPropertiesTest
-        Assert.assertEquals(PathPropertiesViewModel.EraseDrawToggleButtonTextEnum.DRAW_MODE_TEXT, vm.eraseDrawToggleButtonText.value)
         Assert.assertEquals(MotionEvent.Idle, vm.motionEvent.value);
         Assert.assertEquals(Offset.Unspecified, vm.currentPosition.value)
         Assert.assertEquals(Offset.Unspecified, vm.previousPosition.value)
@@ -32,18 +29,17 @@ class PathPropertiesViewModelTest {
     @Test
     fun testReset() {
         val vm = PathPropertiesViewModel()
-        vm.updateHexColorCode("#FF0000")
+        vm.updateHexColorCode(Color.White)
         vm.updateMotionEvent(MotionEvent.Up)
         vm.reset()
         Assert.assertSame("#ffffff", vm.hexColorCode.value)
     }
 
-
     @Test
     fun testUpdateHexColorCode() {
         val vm = PathPropertiesViewModel()
         val before = vm.hexColorCode.value
-        vm.updateHexColorCode("#FF0000")
+        vm.updateHexColorCode(Color.White)
         Assert.assertNotSame(before, vm.hexColorCode.value)
     }
 
@@ -55,7 +51,6 @@ class PathPropertiesViewModelTest {
         Assert.assertNotSame(before, vm.motionEvent.value)
     }
 
-
     @Test
     fun testUpdateCurrentPathProperty() {
         val vm = PathPropertiesViewModel()
@@ -66,26 +61,5 @@ class PathPropertiesViewModelTest {
         Assert.assertNotSame(oldProperty.strokeWidth, newProperty.strokeWidth)
         Assert.assertNotSame(oldProperty.strokeCap, newProperty.strokeCap)
         Assert.assertNotSame(oldProperty.strokeJoin, newProperty.strokeJoin)
-    }
-
-    @Test
-    fun testIsEraseMode() {
-        val vm = PathPropertiesViewModel()
-        Assert.assertFalse(vm.isEraseMode())
-        vm.currentPathProperty.value.eraseMode = true
-        Assert.assertTrue(vm.isEraseMode())
-    }
-
-
-    @Test
-    fun testUndoLastAction() {
-        val vm = PathPropertiesViewModel()
-        Assert.assertEquals(0, vm.paths.size)
-        vm.paths.add(Pair(Path(), PathProperties()))
-        Assert.assertEquals(1, vm.paths.size)
-        vm.paths.add(Pair(Path(), PathProperties()))
-        Assert.assertEquals(2, vm.paths.size)
-        vm.undoLastAction()
-        Assert.assertEquals(1, vm.paths.size)
     }
 }

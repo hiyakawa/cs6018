@@ -1,4 +1,4 @@
-package com.cs6018.canvasexample.utils
+package com.cs6018.canvasexample
 
 import android.app.Application
 import com.cs6018.canvasexample.data.DrawingInfoDatabase

@@ -8,8 +8,6 @@ import java.util.Date
 
 @Dao
 interface DrawingInfoDAO {
-
-
     @Insert
     suspend fun addDrawingInfo(data: DrawingInfo)
 

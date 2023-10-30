@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <application
-        android:name=".utils.DrawingApplication"
+        android:name=".DrawingApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -31,5 +31,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

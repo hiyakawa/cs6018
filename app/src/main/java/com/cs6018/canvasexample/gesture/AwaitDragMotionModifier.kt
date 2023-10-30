@@ -1,4 +1,4 @@
-package com.cs6018.canvasexample.utils
+package com.cs6018.canvasexample.gesture
 
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.awaitTouchSlopOrCancellation

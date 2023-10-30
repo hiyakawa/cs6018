@@ -22,11 +22,11 @@ data class DrawingInfo(
     var lastModifiedDate: Date,
     var createdDate: Date,
     var drawingTitle: String,
-    var imagePath: String?, // Make imageUrl nullable
-    var thumbnail: ByteArray? // Make thumbnail nullable and change its type to ByteArray
+    var imagePath: String?,
+    var thumbnail: ByteArray?
 ) {
     @PrimaryKey(autoGenerate = true)
-    var id: Int = 0 // Integer primary key for the DB
+    var id: Int = 0
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

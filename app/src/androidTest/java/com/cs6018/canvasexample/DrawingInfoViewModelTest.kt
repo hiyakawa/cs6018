@@ -1,6 +1,11 @@
 package com.cs6018.canvasexample
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.net.Uri
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.testing.TestLifecycleOwner
@@ -10,9 +15,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.cs6018.canvasexample.data.DrawingInfo
 import com.cs6018.canvasexample.data.DrawingInfoDAO
 import com.cs6018.canvasexample.data.DrawingInfoDatabase
-import com.cs6018.canvasexample.data.DrawingInfoViewModel
-import com.cs6018.canvasexample.utils.deleteImageFile
-import com.cs6018.canvasexample.utils.doesFileExist
+import com.cs6018.canvasexample.model.DrawingInfoViewModel
+import com.cs6018.canvasexample.model.deleteImageFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
@@ -22,6 +26,11 @@ import kotlinx.coroutines.withContext
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
+import java.security.SecureRandom
+import java.util.Date
+import java.util.Random
+import java.util.concurrent.TimeUnit
 import com.cs6018.canvasexample.data.DrawingInfoRepository as Repository
 
 @RunWith(AndroidJUnit4::class)
@@ -34,7 +43,6 @@ class DrawingInfoViewModelTest {
 
     @Before
     fun setup() {
-        // create a database in memory
         val context = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(
             context, DrawingInfoDatabase::class.java
@@ -82,7 +90,9 @@ class DrawingInfoViewModelTest {
 
     @Test
     fun testUpdateThumbnail() {
-        val thumbnail = generateRandomByteArray(100)
+        val random = SecureRandom()
+        val thumbnail = ByteArray(100)
+        random.nextBytes(thumbnail)
 
         scope.launch {
             viewModel.setActiveDrawingInfoById(1)
@@ -104,10 +114,17 @@ class DrawingInfoViewModelTest {
             assert(imagePath != null)
             println("Image path: $imagePath")
 
-            // delete test image to prevent memory leak
             deleteImageFile(imagePath, context)
-            assert(!doesFileExist(imagePath))
+            assert(!fileExists(imagePath))
         }
+    }
+
+    private fun fileExists(filePath: String?): Boolean {
+        if (filePath != null) {
+            val imageFile = File(Uri.parse(filePath).path ?: "")
+            return imageFile.exists()
+        }
+        return false
     }
 
     @Test
@@ -125,4 +142,48 @@ class DrawingInfoViewModelTest {
             }
         }
     }
+}
+
+fun generateRandomBitmap(width: Int, height: Int): Bitmap {
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val paint = Paint()
+    val random = Random()
+
+    val red = random.nextInt(256)
+    val green = random.nextInt(256)
+    val blue = random.nextInt(256)
+    val color = Color.rgb(red, green, blue)
+    canvas.drawColor(color)
+
+    val circleRadius = width / 4
+    val circleX = random.nextInt(width)
+    val circleY = random.nextInt(height)
+    paint.color = Color.WHITE
+    canvas.drawCircle(circleX.toFloat(), circleY.toFloat(), circleRadius.toFloat(), paint)
+
+    return bitmap
+}
+
+fun generateRandomTestDrawingInfoList(n: Int): List<DrawingInfo> {
+    val drawingInfoList = mutableListOf<DrawingInfo>()
+    val random = Random()
+
+    for (i in 1..n) {
+        val createdTimeMillis = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(
+            random.nextInt(365)
+                .toLong()
+        )
+
+        val lastModifiedTimeMillis =
+            createdTimeMillis + TimeUnit.DAYS.toMillis(random.nextInt(365).toLong())
+        val lastModifiedDate = Date(lastModifiedTimeMillis)
+        val createdDate = Date(createdTimeMillis)
+
+        val drawingInfo = DrawingInfo(lastModifiedDate, createdDate, "Drawing $i", null, null)
+        drawingInfo.id = i
+        drawingInfoList.add(drawingInfo)
+    }
+
+    return drawingInfoList
 }

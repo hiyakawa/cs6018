@@ -1,10 +1,9 @@
-package com.cs6018.canvasexample.data
+package com.cs6018.canvasexample.model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.cs6018.canvasexample.data.DrawingInfoRepository
 
-
-// This factory class allows us to define custom constructors for the view model
 class DrawingInfoViewModelFactory(private val repository: DrawingInfoRepository) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

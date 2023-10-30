@@ -38,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Path
@@ -58,14 +57,13 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
-import com.cs6018.canvasexample.data.CapturableImageViewModel
-import com.cs6018.canvasexample.data.DrawingInfoViewModel
-import com.cs6018.canvasexample.data.PathProperties
-import com.cs6018.canvasexample.data.PathPropertiesViewModel
+import com.cs6018.canvasexample.model.CapturableImageViewModel
+import com.cs6018.canvasexample.model.DrawingInfoViewModel
+import com.cs6018.canvasexample.model.PathProperties
+import com.cs6018.canvasexample.model.PathPropertiesViewModel
 import com.cs6018.canvasexample.ui.theme.NudeBlue
-import com.cs6018.canvasexample.utils.MotionEvent
-import com.cs6018.canvasexample.utils.dragMotionEvent
-import com.cs6018.canvasexample.utils.getCurrentDateTimeString
+import com.cs6018.canvasexample.gesture.MotionEvent
+import com.cs6018.canvasexample.gesture.dragMotionEvent
 import dev.shreyaspatil.capturable.Capturable
 import dev.shreyaspatil.capturable.controller.CaptureController
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
@@ -73,6 +71,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -211,7 +212,7 @@ fun onShareClick(
         val bitmap = drawingInfoViewModel.getActiveCapturedImage().value
 
         if (bitmap == null) {
-            Log.e("CanvasScreen", "bitmap is null")
+            Log.e("CanvasScreen", "Bitmap is null")
         } else {
             val activeDrawingInfoDrawingTitle =
                 drawingInfoViewModel.activeDrawingInfo.value?.drawingTitle
@@ -230,8 +231,8 @@ fun onShareClick(
 
 private fun saveBitmapAsTemporaryImage(context: Context, bitmap: Bitmap): Uri {
     val cacheDir = context.cacheDir
-    val imageFile = File.createTempFile(getCurrentDateTimeString(), ".jpg", cacheDir)
-
+    val curTime = SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.getDefault()).format(Date())
+    val imageFile = File.createTempFile(curTime, ".jpg", cacheDir)
     val outputStream = FileOutputStream(imageFile)
     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
     outputStream.flush()
@@ -254,7 +255,6 @@ fun customBackNavigation(
     }
 }
 
-
 fun saveCurrentDrawing(
     drawingInfoViewModel: DrawingInfoViewModel,
     coroutineScope: CoroutineScope,
@@ -268,13 +268,10 @@ fun saveCurrentDrawing(
     coroutineScope.launch {
         captureController.capture()
     }
-
     coroutineScope.launch {
         captureableImageViewModel.signalChannel.value?.receive()
         captureableImageViewModel.setNewSignalChannel()
-
         drawingInfoViewModel.addDrawingInfoWithRecentCapturedImage(context, drawingTitle)
-
         drawingInfoViewModel.setActiveDrawingInfoById(null)
         drawingInfoViewModel.setActiveCapturedImage(null)
         pathPropertiesViewModel.reset()
@@ -303,7 +300,7 @@ fun Playground(
     try {
         backgroundImageUri = Uri.parse(activeDrawingInfo?.imagePath)
     } catch (e: Exception) {
-        Log.d("CanvasPage", "Uri.parse failed $e")
+        e.printStackTrace()
     }
     val basePainter = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
@@ -373,7 +370,6 @@ fun Playground(
                     }
                 }
             )
-
         Capturable(
             modifier = Modifier
                 .fillMaxWidth()
@@ -421,8 +417,7 @@ fun Playground(
                                 strokeWidth = currentPathProperty.value.strokeWidth,
                                 color = currentPathProperty.value.color,
                                 strokeCap = currentPathProperty.value.strokeCap,
-                                strokeJoin = currentPathProperty.value.strokeJoin,
-//                                eraseMode = currentPathProperty.value.eraseMode
+                                strokeJoin = currentPathProperty.value.strokeJoin
                             )
                         )
                         pathsUndone.clear()
@@ -442,21 +437,12 @@ fun Playground(
                             cap = property.strokeCap,
                             join = property.strokeJoin
                         )
-//                        if (property.eraseMode) {
-//                            drawPath(
-//                                color = Color.Transparent,
-//                                path = path,
-//                                style = style,
-//                                blendMode = BlendMode.Clear
-//                            )
-//                        } else {
-                            drawPath(
-                                color = property.color,
-                                path = path,
-                                style = style,
-                                alpha = property.color.alpha
-                            )
-//                        }
+                        drawPath(
+                            color = property.color,
+                            path = path,
+                            style = style,
+                            alpha = property.color.alpha
+                        )
                     }
                     if (motionEvent.value != MotionEvent.Idle) {
                         val style = Stroke(
@@ -464,21 +450,12 @@ fun Playground(
                             cap = currentPathProperty.value.strokeCap,
                             join = currentPathProperty.value.strokeJoin
                         )
-//                        if (currentPathProperty.value.eraseMode) {
-//                            drawPath(
-//                                color = Color.Transparent,
-//                                path = currentPath.value,
-//                                style = style,
-//                                blendMode = BlendMode.Clear
-//                            )
-//                        } else {
-                            drawPath(
-                                color = currentPathProperty.value.color,
-                                path = currentPath.value,
-                                style = style,
-                                alpha = currentPathProperty.value.color.alpha
-                            )
-//                        }
+                        drawPath(
+                            color = currentPathProperty.value.color,
+                            path = currentPath.value,
+                            style = style,
+                            alpha = currentPathProperty.value.color.alpha
+                        )
                     }
                     restoreToCount(checkPoint)
                 }

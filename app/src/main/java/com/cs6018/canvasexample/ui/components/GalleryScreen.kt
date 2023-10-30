@@ -9,9 +9,12 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,11 +23,15 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismiss
@@ -106,7 +113,6 @@ fun GalleryScreen(
         }
         onDispose { }
     }
-
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -215,14 +221,35 @@ fun DrawingListItem(
             state = dismissState,
             modifier = Modifier,
             background = {
-                DismissBackground(dismissState)
+                val color = when (dismissState.dismissDirection) {
+                    DismissDirection.StartToEnd -> Color.Transparent
+                    DismissDirection.EndToStart -> Color.Red
+                    null -> Color.Transparent
+                }
+                val direction = dismissState.dismissDirection
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color)
+                        .padding(12.dp, 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Spacer(modifier = Modifier)
+                    if (direction == DismissDirection.EndToStart) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = "delete",
+                            tint = Color.White,
+                        )
+                    }
+                }
             },
             dismissContent = {
                 DrawingPreview(
                     drawingInfo = currentItem,
                     onClick = {
                         scope.launch {
-                            Log.d("DrawingList", "Clicked on drawing ${drawingInfo.id}")
                             setActiveDrawingInfoById(currentItem.id)
                         }
                         navigateToCanvasPage()
@@ -231,7 +258,6 @@ fun DrawingListItem(
             }
         )
     }
-
     LaunchedEffect(show) {
         if (!show) {
             delay(500)
