@@ -17,10 +17,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -179,6 +181,14 @@ fun CanvasScreen(
                                 fontFamily = FontFamily.Serif)
                         }
                         Button(shape = RectangleShape,
+                            onClick = { isSensorMode = !isSensorMode },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = NudeBlue)) {
+                            Text(text = if (isSensorMode) "Stop" else "Ball",
+                                fontSize = 15.sp,
+                                fontFamily = FontFamily.Serif)
+                        }
+                        Button(shape = RectangleShape,
                             onClick = { saveCurrentDrawing(
                                 drawingInfoViewModel,
                                 coroutineScope,
@@ -192,14 +202,6 @@ fun CanvasScreen(
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = NudeBlue)) {
                             Text(text = "Save",
-                                fontSize = 15.sp,
-                                fontFamily = FontFamily.Serif)
-                        }
-                        Button(shape = RectangleShape,
-                            onClick = { isSensorMode = !isSensorMode },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = NudeBlue)) {
-                            Text(text = if (isSensorMode) "Stop Sensor" else "Start Sensor",
                                 fontSize = 15.sp,
                                 fontFamily = FontFamily.Serif)
                         }
