@@ -457,7 +457,7 @@ fun Playground(
                     )
                     val newPath = Path().apply {
                         moveTo(ballPosition.x, ballPosition.y)
-                        lineTo(ballPosition.x, ballPosition.y) // 绘制一个点作为路径的起点
+                        lineTo(ballPosition.x, ballPosition.y)
                     }
                     viewModel.paths.add(Pair(newPath, viewModel.currentPathProperty.value))
 
