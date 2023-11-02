@@ -3,6 +3,10 @@ package com.cs6018.canvasexample.ui.components
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.BackHandler
@@ -13,10 +17,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -27,10 +33,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -89,7 +98,14 @@ fun CanvasScreen(
     val captureController = rememberCaptureController()
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+    val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+
+    var ballPosition by remember { mutableStateOf(Offset(0f, 0f)) }
+    var ballVelocity by remember { mutableStateOf(Offset(0f, 0f)) }
+    var isSensorMode by rememberSaveable { mutableStateOf(false) }
+
     val activeDrawingInfo by drawingInfoViewModel.activeDrawingInfo.observeAsState()
+
     var drawingTitle by rememberSaveable {
         mutableStateOf(
             activeDrawingInfo?.drawingTitle ?: "Untitled"
@@ -165,6 +181,14 @@ fun CanvasScreen(
                                 fontFamily = FontFamily.Serif)
                         }
                         Button(shape = RectangleShape,
+                            onClick = { isSensorMode = !isSensorMode },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = NudeBlue)) {
+                            Text(text = if (isSensorMode) "Stop" else "Ball",
+                                fontSize = 15.sp,
+                                fontFamily = FontFamily.Serif)
+                        }
+                        Button(shape = RectangleShape,
                             onClick = { saveCurrentDrawing(
                                 drawingInfoViewModel,
                                 coroutineScope,
@@ -191,7 +215,8 @@ fun CanvasScreen(
                 it,
                 captureController,
                 drawingInfoViewModel,
-                capturableImageViewModel
+                capturableImageViewModel,
+                isSensorMode
             )
         }
     )
@@ -285,8 +310,38 @@ fun Playground(
     paddingValues: PaddingValues,
     captureController: CaptureController,
     drawingInfoViewModel: DrawingInfoViewModel,
-    capturableImageViewModel: CapturableImageViewModel
+    capturableImageViewModel: CapturableImageViewModel,
+    isSensorMode: Boolean = false
 ) {
+    val context = LocalContext.current
+    val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+    var ballPosition by remember { mutableStateOf(Offset(100f, 100f)) }
+    var ballVelocity by remember { mutableStateOf(Offset(0f, 0f)) }
+
+    var lastSensorUpdate = 0L
+    val sensorUpdateInterval = 100
+
+    val sensorListener = object : SensorEventListener {
+        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+
+        override fun onSensorChanged(event: SensorEvent?) {
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastSensorUpdate > sensorUpdateInterval) {
+                val velocity = Offset(event?.values?.get(0) ?: 0f, event?.values?.get(1) ?: 0f)
+                ballVelocity = velocity
+                val newPosition = ballPosition + ballVelocity
+                ballPosition = newPosition
+                lastSensorUpdate = currentTime
+            }
+        }
+    }
+
+    if (isSensorMode) {
+        sensorManager.registerListener(sensorListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
+    } else {
+        sensorManager.unregisterListener(sensorListener)
+    }
     val paths = viewModel.paths
     val pathsUndone = viewModel.pathsUndone
     val motionEvent = viewModel.motionEvent
@@ -296,7 +351,6 @@ fun Playground(
     val currentPathProperty = viewModel.currentPathProperty
     val activeDrawingInfo by drawingInfoViewModel.activeDrawingInfo.observeAsState()
     var backgroundImageUri: Uri? = null
-
     try {
         backgroundImageUri = Uri.parse(activeDrawingInfo?.imagePath)
     } catch (e: Exception) {
@@ -388,6 +442,27 @@ fun Playground(
             }
         ) {
             Canvas(modifier = drawModifier) {
+                val canvasWidth = size.width
+                val canvasHeight = size.height
+
+                if (isSensorMode) {
+                    ballPosition = Offset(
+                        ballPosition.x.coerceIn(0f, canvasWidth),
+                        ballPosition.y.coerceIn(0f, canvasHeight)
+                    )
+                    drawCircle(
+                        color = viewModel.currentPathProperty.value.color,
+                        radius = viewModel.currentPathProperty.value.strokeWidth / 2,
+                        center = ballPosition
+                    )
+                    val newPath = Path().apply {
+                        moveTo(ballPosition.x, ballPosition.y)
+                        lineTo(ballPosition.x, ballPosition.y)
+                    }
+                    viewModel.paths.add(Pair(newPath, viewModel.currentPathProperty.value))
+
+                }
+
                 when (motionEvent.value) {
                     MotionEvent.Down -> {
                         currentPath.value.moveTo(
@@ -427,6 +502,23 @@ fun Playground(
                     }
                     else -> Unit
                 }
+
+                for (pathInfo in paths){
+                    val path = pathInfo.first
+                    val pathProperty = pathInfo.second
+                    val style = Stroke(
+                        width = pathProperty.strokeWidth,
+                        cap = pathProperty.strokeCap,
+                        join = pathProperty.strokeJoin
+                    )
+                    drawPath(
+                        color = pathProperty.color,
+                        path = path,
+                        style = style,
+                        alpha = pathProperty.color.alpha
+                    )
+                }
+
                 with(drawContext.canvas.nativeCanvas) {
                     val checkPoint = saveLayer(null, null)
                     paths.forEach {
