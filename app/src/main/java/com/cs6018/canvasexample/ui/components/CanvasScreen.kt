@@ -314,16 +314,24 @@ fun Playground(
     val context = LocalContext.current
     val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-    var ballPosition by remember { mutableStateOf(Offset(0f, 0f)) }
+    var ballPosition by remember { mutableStateOf(Offset(100f, 100f)) }
     var ballVelocity by remember { mutableStateOf(Offset(0f, 0f)) }
+
+    var lastSensorUpdate = 0L
+    val sensorUpdateInterval = 100
+
     val sensorListener = object : SensorEventListener {
         override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
         override fun onSensorChanged(event: SensorEvent?) {
-            val velocity = Offset(event?.values?.get(0) ?: 0f, event?.values?.get(1) ?: 0f)
-            ballVelocity = velocity
-            val newPosition = ballPosition + ballVelocity
-            ballPosition = newPosition
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastSensorUpdate > sensorUpdateInterval) {
+                val velocity = Offset(event?.values?.get(0) ?: 0f, event?.values?.get(1) ?: 0f)
+                ballVelocity = velocity
+                val newPosition = ballPosition + ballVelocity
+                ballPosition = newPosition
+                lastSensorUpdate = currentTime
+            }
         }
     }
 
@@ -332,7 +340,6 @@ fun Playground(
     } else {
         sensorManager.unregisterListener(sensorListener)
     }
-    var ballPath = Path()
     val paths = viewModel.paths
     val pathsUndone = viewModel.pathsUndone
     val motionEvent = viewModel.motionEvent
@@ -436,7 +443,7 @@ fun Playground(
                 val canvasWidth = size.width
                 val canvasHeight = size.height
 
-                if (isSensorMode && ballPosition != Offset.Unspecified) {
+                if (isSensorMode) {
                     ballPosition = Offset(
                         ballPosition.x.coerceIn(0f, canvasWidth),
                         ballPosition.y.coerceIn(0f, canvasHeight)
@@ -446,7 +453,12 @@ fun Playground(
                         radius = viewModel.currentPathProperty.value.strokeWidth / 2,
                         center = ballPosition
                     )
-                    currentPath.value.lineTo(ballPosition.x, ballPosition.y)
+                    val newPath = Path().apply {
+                        moveTo(ballPosition.x, ballPosition.y)
+                        lineTo(ballPosition.x, ballPosition.y) // 绘制一个点作为路径的起点
+                    }
+                    viewModel.paths.add(Pair(newPath, viewModel.currentPathProperty.value))
+
                 }
 
                 when (motionEvent.value) {
