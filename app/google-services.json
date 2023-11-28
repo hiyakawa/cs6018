@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "569964988051",
+    "project_id": "latelierbleu-e2ac1",
+    "storage_bucket": "latelierbleu-e2ac1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569964988051:android:a9c678a3ec943b45e46f66",
+        "android_client_info": {
+          "package_name": "com.cs6018.canvasexample"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvN4USQMJ5SUhVaXisMeJ_uxIVhX321D0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
